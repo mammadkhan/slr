@@ -12,6 +12,7 @@ class LinearRegression:
         self.b = 0
         self.w_grad = 0
         self.b_grad = 0
+        self.lr = 0.01
 
     @staticmethod
     def _standardize(l):
@@ -42,7 +43,15 @@ class LinearRegression:
         # dC/db = (wx+b-y)**2 = 2(wx+b-y) * 1 -> 1/2m * sum(2(wx+b-y)) = 1/m * sum(wx+b-y)
         m = len(self.x_stand)
         for i in range(m):
-            self.w_grad += self.x_stand[i] * self.predict(self.x_stand[i]) - self.y_stand[i]
+            self.w_grad += self.x_stand[i] * (self.predict(self.x_stand[i]) - self.y_stand[i])
             self.b_grad += self.predict(self.x_stand[i]) - self.y_stand[i]
         self.w_grad = self.w_grad * 1/m
+        print(self.w_grad)
         self.b_grad = self.b_grad * 1/m
+
+    def train(self,iter=100):
+        self._transform()
+        for i in range(iter):
+            self.grad()
+            self.w = self.w - self.lr * self.w_grad
+            self.b = self.b - self.lr * self.b_grad
