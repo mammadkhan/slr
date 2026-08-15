@@ -1,7 +1,8 @@
 class LinearRegression:
-    def __init__(self,x,y,train_perc=0.8):
+    def __init__(self,x,y,lr=0.01,train_perc=0.8):
         self.x = x
         self.y = y
+        self.lr = lr
         self.train_perc = train_perc
         self.x_train = []
         self.y_train = []
@@ -19,7 +20,6 @@ class LinearRegression:
         self.b = 0
         self.w_grad = 0
         self.b_grad = 0
-        self.lr = 0.01
 
     #training and testing data split without random
     def _train_test(self):
@@ -90,6 +90,6 @@ class LinearRegression:
     def test(self):
         print(f"Train Cost: {self.train_cost()}")
         print(f"Test Cost: {self.test_cost()}")
-        print("------ Data - Prediction --------")
+        print("------ Data - Prediction - Actual data --------")
         for i in range(len(self.y_test)):
-            print(f"{self.x_test[i]} - {self.fit(self.x_test[i])}")
+            print(f"{self.x_test[i]} -- {self.fit(self.x_test[i])} -- {self.y_test[i]}")
