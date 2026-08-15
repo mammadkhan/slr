@@ -29,6 +29,12 @@ class LinearRegression:
         # f(x) = wx + b
         return self.w * x + self.b
 
+    #method for predicting with real numbers
+    def fit(self,x):
+        x_stand = (x - self.x_mean) / self.x_std
+        y_stand = self.predict(x_stand)
+        return y_stand * self.y_std + self.y_mean
+
     def cost(self):
         # 1/2m * sum((y_hat - y) ** 2)
         m = len(self.x_stand)
@@ -42,11 +48,12 @@ class LinearRegression:
         # dC/dw = (wx+b-y)**2 = 2(wx+b-y) * x -> 1/2m * sum(2x(wx+b-y)) = 1/m * sum(x(wx+b-y)) chain rule derv
         # dC/db = (wx+b-y)**2 = 2(wx+b-y) * 1 -> 1/2m * sum(2(wx+b-y)) = 1/m * sum(wx+b-y)
         m = len(self.x_stand)
+        self.w_grad = 0
+        self.b_grad = 0
         for i in range(m):
             self.w_grad += self.x_stand[i] * (self.predict(self.x_stand[i]) - self.y_stand[i])
             self.b_grad += self.predict(self.x_stand[i]) - self.y_stand[i]
         self.w_grad = self.w_grad * 1/m
-        print(self.w_grad)
         self.b_grad = self.b_grad * 1/m
 
     def train(self,iter=100):
