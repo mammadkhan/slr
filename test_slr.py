@@ -7,5 +7,6 @@ x = data["years_experience"].tolist()
 y = data["annual_salary_usd"].tolist()
 
 mylr = slr.LinearRegression(x,y,0.001)
-mylr.train(10000)
+mylr.ols()
+# mylr.train(1000)
 mylr.test()

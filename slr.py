@@ -39,8 +39,8 @@ class LinearRegression:
         self.x_train_stand, self.x_std, self.x_mean = self._standardize(self.x_train)
         self.y_train_stand, self.y_std, self.y_mean = self._standardize(self.y_train)
         #test
-        self.x_test_stand= [(x - self.x_mean)/self.x_std for x in self.x_test]
-        self.y_test_stand= [(x - self.y_mean)/self.y_std for x in self.y_test]
+        self.x_test_stand = [(x - self.x_mean)/self.x_std for x in self.x_test]
+        self.y_test_stand = [(x - self.y_mean)/self.y_std for x in self.y_test]
 
     def predict(self,x):
         # f(x) = wx + b
@@ -54,10 +54,7 @@ class LinearRegression:
 
     def _cost(self,x,y):
         m = len(x)
-        cost_right_side = 0
-        for i in range(m):
-            cost_right_side += (self.predict(x[i])-y[i])**2
-        return 1/(2*m) * cost_right_side
+        return 1/(2*m) * sum([(self.predict(x) - y)**2 for x,y in zip(x,y)])
 
     def train_cost(self):
         return self._cost(self.x_train_stand,self.y_train_stand)
@@ -71,13 +68,9 @@ class LinearRegression:
         # dC/dw = (wx+b-y)**2 = 2(wx+b-y) * x -> 1/2m * sum(2x(wx+b-y)) = 1/m * sum(x(wx+b-y)) chain rule derv
         # dC/db = (wx+b-y)**2 = 2(wx+b-y) * 1 -> 1/2m * sum(2(wx+b-y)) = 1/m * sum(wx+b-y)
         m = len(self.x_train_stand)
-        self.w_grad = 0
-        self.b_grad = 0
-        for i in range(m):
-            self.w_grad += self.x_train_stand[i] * (self.predict(self.x_train_stand[i]) - self.y_train_stand[i])
-            self.b_grad += self.predict(self.x_train_stand[i]) - self.y_train_stand[i]
-        self.w_grad = self.w_grad * 1/m
-        self.b_grad = self.b_grad * 1/m
+        self.w_grad = sum(x * (self.predict(x)-y) for x,y in zip(self.x_train_stand,self.y_train_stand)) * 1/m
+        self.b_grad = sum(self.predict(x) - y for x,y in zip(self.x_train_stand,self.y_train_stand)) * 1/m
+
 
     def train(self,iter=100):
         self._train_test()
@@ -86,6 +79,19 @@ class LinearRegression:
             self.grad()
             self.w = self.w - self.lr * self.w_grad
             self.b = self.b - self.lr * self.b_grad
+
+    def ols(self):
+        self._train_test()
+        self._transform()
+        #ols formula on real space
+        # ols_w = sum((xi-x_mean) * (yi-y_mean)) / sum(xi-x_mean)**2)
+        # ols_b = y_mean - w*x_mean
+        # ols formula on standardized space (mean is 0)
+        # ols_w = sum(x*y) / sum(x**2)
+        # ols_b = 0
+        self.w = sum([x*y for x,y in zip(self.x_train_stand,self.y_train_stand)]) / sum([x**2 for x in self.x_train_stand])
+        self.b = 0
+
 
     def test(self):
         print(f"Train Cost: {self.train_cost()}")
